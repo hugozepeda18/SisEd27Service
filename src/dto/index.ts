@@ -1,0 +1,17 @@
+
+export { CreateAlumnoDto } from './createAlumno.dto'
+export { UpdateAlumnoDto } from './updateAlumno.dto'
+export { CreatePersonalDto } from './createPersonal.dto'
+export { DeletePersonalDto } from './deletePersonal.dto'
+export { CreateIncidenciaDto } from './createIncidencia.dto'
+export { CreateUserDto } from './createUser.dto'
+export { LoginDto } from './login.dto'
+export { CreateAsistenciaDto } from './createAsistencia.dto'
+
+export { QueryMatriculaDto } from './queryMatricula.dto'
+export { QueryAlumnoDto } from './queryAlumno.dto'
+export { QueryAlumnosGradoDto } from './queryAlumnosGrado.dto'
+export { QueryAlumnosGradoGrupoDto } from './queryAlumnosGradoGrupo.dto'
+export { QueryDocentesDto } from './queryDocentes.dto'
+export { QueryIncidenciasAlumnoDto } from './queryIncidenciasAlumno.dto'
+export { QueryIncidenciaIdDto } from './queryIncidenciaId.dto'
