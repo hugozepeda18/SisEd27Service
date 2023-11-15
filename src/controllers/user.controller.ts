@@ -3,7 +3,6 @@ import { UserService } from 'src/services/user.service';
 import { CreateUserDto, LoginDto } from 'src/dto';
 import { AuthService } from 'src/services/auth.service';
 import { QueryEmailDto } from 'src/dto/queryEmail.dto';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 
 @Controller('user')
 export class UserController {
