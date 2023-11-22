@@ -11,15 +11,15 @@ async function bootstrap() {
   }))
 
   const config = new DocumentBuilder()
-    .setTitle('School API')
-    .setDescription('The School API description')
+    .setTitle('SisEdService')
+    .setDescription('SisEdService API')
     .setVersion('1.0')
-    .addTag('school')
+    .addTag('sisedservice')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
   app.enableCors();
-  await app.listen(3000);
+  await app.listen(9000);
 }
 bootstrap();
