@@ -17,33 +17,57 @@ export class AsistenciaService {
     ) {}
 
     async getAsistenciasAlumno (matricula: number) {
-        const alumno = await this.alumnoRepository.findOne({where: {matricula}})
-        return await this.asistenciaRepository.find({
-            where: { alumno_id: alumno}
-        })
+        try {
+            const alumno = await this.alumnoRepository.findOne({where: {matricula}})
+            if (!alumno) {
+                throw new HttpException('No se encontró alumno con esa matricula', HttpStatus.NOT_FOUND)
+            }
+            return await this.asistenciaRepository.find({
+                where: { alumno_id: alumno}
+            })
+        } catch (error) {
+            this.logger.error(`Asistencia de alumno ${matricula} - ${error}`)
+            throw new HttpException('Error recuperando asistencias', HttpStatus.INTERNAL_SERVER_ERROR)  
+        }
     }
 
     async getAsistenciasAlumnos (grado: number, turno: string) {
-        const alumnos = await this.alumnoRepository.find({where: {grado, turno}})
-        return await this.asistenciaRepository.find({
-            where: { alumno_id: alumnos}
-        })
+        try {
+            const alumnos = await this.alumnoRepository.find({where: {grado, turno}})
+            if (alumnos.length == 0) {
+                throw new HttpException('No se encontró alumnos con ese grado y turno', HttpStatus.NOT_FOUND)
+            }
+            return await this.asistenciaRepository.find({
+                where: { alumno_id: alumnos}
+            })
+        } catch (error) {
+            this.logger.error(`Asistencia de alumnos de grado ${grado} y turno ${turno} - ${error}`)
+            throw new HttpException('Error recuperando asistencias', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async getAsistenciasAlumnosGrupo (grado: number, turno: string, grupo: string) {
-        const alumnos = await this.alumnoRepository.find({where: {grado, turno, grupo}})
-        return await this.asistenciaRepository.find({
-            where: { alumno_id: alumnos}
-        })
+        try {
+            const alumnos = await this.alumnoRepository.find({where: {grado, turno, grupo}})
+            if (alumnos.length == 0) {
+                throw new HttpException('No se encontró alumnos con ese grado, turno y grupo', HttpStatus.NOT_FOUND)
+            }
+            return await this.asistenciaRepository.find({
+                where: { alumno_id: alumnos}
+            })
+        } catch (error) {
+            this.logger.error(`Asistencia de alumnos de grado ${grado} y turno ${turno} - ${error}`)
+            throw new HttpException('Error recuperando asistencias', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async createAsistencia (asistencia: CreateAsistenciaDto) {
         try {
             const asistenciaEntity = this.asistenciaRepository.create(asistencia)
-            this.logger.debug('Creando asistencia')
+            this.logger.log('Asistencia creada')
             return await this.asistenciaRepository.save(asistenciaEntity)
         } catch (error) {
-            this.logger.error(`Incidencia con ${error}`)
+            this.logger.error(`Asistencia con error - ${error}`)
             throw new HttpException('Error creando asistencia', HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }

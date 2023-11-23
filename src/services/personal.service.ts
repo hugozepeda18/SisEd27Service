@@ -16,44 +16,89 @@ export class PersonalService {
     ) {}
 
     async getDocentes(funsion: string, turno: string) {
-        return await this.personalRepository.find({where: {
-            funsion: funsion,
-            turno: turno
-        }})
+        try {
+            const docentes = await this.personalRepository.find({where: {
+                funsion: funsion,
+                turno: turno
+            }})
+            if (docentes.length == 0) {
+                throw new HttpException('No se encontró docentes con esa funsion y turno', HttpStatus.NOT_FOUND)
+            }
+            return docentes
+        } catch (error) {
+            this.logger.error(`Error recuperando docentes con funsion ${funsion} y turno ${turno} - ${error}`)
+            throw new HttpException('Error recuperando docentes', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async getPersonalById(id: number) {
-        return await this.personalRepository.findOne({where: {
-            id: id
-        }})
+        try {
+            const personal = await this.personalRepository.findOne({where: {
+                id: id
+            }})
+            if (!personal) {
+                throw new HttpException('No se encontró personal con ese id', HttpStatus.NOT_FOUND)
+            }
+            return personal
+        } catch (error) {
+            this.logger.error(`Error recuperando personal con id ${id} - ${error}`)
+            throw new HttpException('Error recuperando personal', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async getPersonal() {
-        return await this.personalRepository.find()
+        try {
+            const personal = await this.personalRepository.find()
+            if (personal.length == 0) {
+                throw new HttpException('No se encontró personal', HttpStatus.NOT_FOUND)
+            }
+            return personal
+        } catch (error) {
+            this.logger.error(`Error recuperando personal - ${error}`)
+            throw new HttpException('Error recuperando personal', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async getPersonalTurno(turno: string) {
-        return await this.personalRepository.find(
-            {where: {
-                turno: turno
-            }}
-        )
+        try {
+            const personal = await this.personalRepository.find(
+                {where: {
+                    turno: turno
+                }}
+            )
+            if (personal.length == 0) {
+                throw new HttpException('No se encontró personal con ese turno', HttpStatus.NOT_FOUND)
+            }
+        } catch (error) {
+            this.logger.error(`Error recuperando personal con turno ${turno} - ${error}`)
+            throw new HttpException('Error recuperando personal', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async createPersonal(createPersonalDto: CreatePersonalDto){
-
         try {
             const newPersonal = this.personalRepository.create(createPersonalDto)
+            this.logger.log('Personal creado')
             return await this.personalRepository.save(newPersonal)
         }
         catch (error){
-            this.logger.error(`Alumno no se pudo crear con error ${error}`)
+            this.logger.error(`Nuevo personal no se pudo crear con error ${error}`)
             throw new HttpException('Error creando alumno', HttpStatus.UNPROCESSABLE_ENTITY)
         }
     }
 
     async deletePersonal(id: number) {
-        return await this.personalRepository.delete(id)
+        try {
+            const personal = await this.personalRepository.findOne({where: {
+                id: id
+            }})
+            if (!personal) {
+                throw new HttpException('No se encontró personal con ese id', HttpStatus.NOT_FOUND)
+            }
+            return await this.personalRepository.delete({id: id})
+        } catch (error) {
+            this.logger.error(`Error eliminando personal con id ${id} - ${error}`)
+            throw new HttpException('Error eliminando personal', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
-
 }

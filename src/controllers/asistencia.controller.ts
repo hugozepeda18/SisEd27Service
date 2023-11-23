@@ -11,28 +11,28 @@ export class AsistenciaController {
     
     constructor(private readonly asistenciaService: AsistenciaService) { } 
     
-    @Get('/alumno')
+    @Get('alumno')
     async getAsistenciasAlumno(@Query() {matricula}: QueryIncidenciasAlumnoDto) {
-        this.logger.debug('Recuperando todas las asistencias de un alumno')
+        this.logger.log(`GET - Recuperando todas las asistencias de alumno con matricula ${matricula}`)
         return await this.asistenciaService.getAsistenciasAlumno(matricula)
     }
 
-    @Get('/alumnos/grado')
+    @Get('grado')
     async getAsistenciasAlumnos(@Query() {grado, turno}: QueryAlumnosGradoDto) {
-        this.logger.debug('Recuperando todas las asistencias de un grado')
+        this.logger.log(`GET - Recuperando todas las asistencias de un grado ${grado} con turno ${turno}`)
         return await this.asistenciaService.getAsistenciasAlumnos(grado, turno)
     }
 
-    @Get('/alumnos/grado/grupo')
+    @Get('grupo')
     async getAsistenciasAlumnosGrupo(@Query() {grado, turno, grupo}: QueryAlumnosGradoGrupoDto) {
-        this.logger.debug('Recuperando todas las asistencias de un grupo')
+        this.logger.log(`GET - Recuperando todas las asistencias de un grado y grupo ${grado} ${grupo} con turno ${turno}`)
         return await this.asistenciaService.getAsistenciasAlumnosGrupo(grado, turno, grupo)
     }
 
     @Post()
     @HttpCode(201)
     async createAsistencia(@Body() asistencia: CreateAsistenciaDto) {
-        this.logger.debug('Creando asistencia')
+        this.logger.log('POST - Creando asistencia')
         return await this.asistenciaService.createAsistencia(asistencia)
     }
 }

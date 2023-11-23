@@ -18,35 +18,73 @@ export class UserService {
     ) {}
 
     async getUsers() {
-        return await this.userRepository.find();
+        try {
+            const users = await this.userRepository.find()
+            if (users.length == 0) {
+                throw new HttpException('No se encontraron usuarios', HttpStatus.NOT_FOUND)
+            }
+            return users
+        } catch (error) {
+            this.logger.error(`Error recuperando usuarios`)
+            throw new HttpException('Error recuperando usuarios', HttpStatus.INTERNAL_SERVER_ERROR)   
+        }
     }
 
-    async getUserById(userId: number) {
-        return await this.userRepository.findOne({
-            where: {
-                id: userId
+    async getUserById(id: number) {
+        try {
+            const user = await this.userRepository.findOne({
+                where: {
+                    id: id
+                }
+            })
+            if (!user) {
+                throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND)
             }
-        });
+            return user
+        } catch (error) {
+            this.logger.error(`Error recuperando usuario con id ${id}`)
+            throw new HttpException('Error recuperando usuario', HttpStatus.INTERNAL_SERVER_ERROR)   
+        }
     }
 
     async  getUserForLogin(email: string){
-        const user = await this.userRepository.findOne({
-            where: {
-                email: email
+        try {
+            const user = await this.userRepository.findOne({
+                where: {
+                    email: email
+                }
+            })
+            if (!user) {
+                throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND)
             }
-        })
-        if (user) return user
-        else throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND)
+            return user
+        } catch (error) {
+            this.logger.error(`Error recuperando usuario con email ${email}`)
+            throw new HttpException('Error recuperando usuario', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async updateUser(password: string, id : number){
         const saltOrRounds = 10
         const hashPassword = await bcrypt.hash(password, saltOrRounds)
-        return await this.userRepository.update({
-            id
-        }, {
-            password: hashPassword
-        })
+        try {
+            const user = await this.userRepository.findOne({
+                where: {
+                    id: id
+                }
+            })
+            if (!user) {
+                throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND)
+            }
+            return await this.userRepository.update({
+                id
+            }, {
+                password: hashPassword
+            })
+        } catch (error) {
+            this.logger.error(`Error actualizando contraseña de usuario con id ${id}`)
+            throw new HttpException('Error actualizando contraseña', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async createUser(userDto: CreateUserDto) {
@@ -55,12 +93,30 @@ export class UserService {
         userDto.password = hashPassword
 
         try{
-            const user = this.userRepository.create(userDto)
-            return await this.userRepository.save(user)
+            const newUser = this.userRepository.create(userDto)
+            this.logger.log('Usuario creado')
+            return await this.userRepository.save(newUser)
         }
         catch (error) {
-            this.logger.error(`Usuario no se pudo crear con error ${error}`)
+            this.logger.error(`Nuevo usuario no se pudo crear con error ${error}`)
             throw new HttpException('Error creando alumno', HttpStatus.UNPROCESSABLE_ENTITY)
+        }
+    }
+
+    async deleteUser(id: number) {
+        try {
+            const user = await this.userRepository.findOne({
+                where: {
+                    id: id
+                }
+            })
+            if (!user) {
+                throw new HttpException('No se encontró usuario con ese id', HttpStatus.NOT_FOUND)
+            }
+            return await this.userRepository.delete({id: id});
+        } catch (error) {
+            this.logger.error(`Error eliminando usuario con id ${id}`)
+            throw new HttpException('Error eliminando usuario', HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 }
