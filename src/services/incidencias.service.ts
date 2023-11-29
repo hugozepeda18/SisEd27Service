@@ -59,9 +59,6 @@ export class IncidenciasService {
                     personal_id: true
                 },
             })
-            if (incidencias.length == 0) {
-                throw new HttpException('No se encontraron incidencias', HttpStatus.NOT_FOUND)
-            }
             return incidencias
         }   catch (error) {
             this.logger.error(`Error recuperando incidencias de alumno con matrícula ${matricula}`)
