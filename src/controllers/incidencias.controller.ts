@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpCode, Logger, Post, Query, Delete } from "@nestjs/common";
-import { CreateIncidenciaDto, QueryAlumnosGradoDto, QueryAlumnosGradoGrupoDto, QueryIncidenciaIdDto, QueryIncidenciasAlumnoDto } from "src/dto";
+import { CreateIncidenciaDto, QueryAlumnoTurnoDto, QueryAlumnosGradoDto, QueryAlumnosGradoGrupoDto, QueryIncidenciaIdDto, QueryIncidenciasAlumnoDto } from "src/dto";
 import { IncidenciasService } from "src/services/incidencias.service";
 
 
@@ -26,6 +26,12 @@ export class IncidenciasController {
     async getIncidenciasAlumno(@Query() {matricula}: QueryIncidenciasAlumnoDto) {
         this.logger.log(`GET - Recuperando todas las incidencias de un alumno con matrícula ${matricula}`)
         return await this.incidenciasService.getIncidenciasAlumno(matricula)
+    }
+
+    @Get('turno')
+    async getAlumnoByTurno(@Query() {turno}: QueryAlumnoTurnoDto) {
+        this.logger.log(`GET - Recuperando todas las incidencias de alumnos con turno ${turno}}`)
+        return await this.incidenciasService.getAlumnoByTurno(turno)
     }
 
     @Get('grado')

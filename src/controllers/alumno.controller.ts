@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, Logger, Param, Post, Put, Query } from '@nestjs/common';
 import { AlumnoService } from '../services/alumno.service';
-import { CreateAlumnoDto, UpdateAlumnoDto, QueryAlumnoDto, QueryMatriculaDto } from '../dto'
+import { CreateAlumnoDto, UpdateAlumnoDto, QueryAlumnoDto, QueryMatriculaDto, QueryAlumnoTurnoDto } from '../dto'
 import { QueryAlumnosGradoDto } from 'src/dto/queryAlumnosGrado.dto';
 import { QueryAlumnosGradoGrupoDto } from 'src/dto/queryAlumnosGradoGrupo.dto';
 
@@ -28,6 +28,12 @@ export class AlumnoController {
         const { nombre, apellido_paterno, apellido_materno } = query
         this.logger.log(`GET - Recuperando alumno con nombre ${nombre} ${apellido_paterno} ${apellido_materno}`)
         return await this.alumnoService.getAlumnoByName(nombre, apellido_paterno, apellido_materno)
+    }
+
+    @Get('turno')
+    async getAlumnoByTurno(@Query() {turno}: QueryAlumnoTurnoDto) {
+        this.logger.log(`GET - Recuperando alumnos con turno ${turno}}`)
+        return await this.alumnoService.getAlumnoByTurno(turno)
     }
 
     @Get('grado')

@@ -66,6 +66,26 @@ export class IncidenciasService {
         }
     }
 
+    async getAlumnoByTurno (turno: string) {
+        try {
+            const alumnos = await this.alumnoRepository.find({where: {turno}})
+            const incidencias = await this.incidenciasRepository.find({
+                where: { alumno_id: alumnos},
+                relations: {
+                    alumno_id: true,
+                    personal_id: true
+                },
+            })
+            if (incidencias.length == 0) {
+                throw new HttpException('No se encontraron incidencias', HttpStatus.NOT_FOUND)
+            }
+            return incidencias
+        } catch (error) {
+            this.logger.error(`Error recuperando incidencias de alumnos con turno ${turno}`)
+            throw new HttpException('Error recuperando incidencias', HttpStatus.INTERNAL_SERVER_ERROR)   
+        }
+    }
+
     async getIncidenciasAlumnos (grado: number, turno: string) {
         try {
             const alumnos = await this.alumnoRepository.find({where: {grado, turno}})

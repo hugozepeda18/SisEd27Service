@@ -58,6 +58,21 @@ export class AlumnoService {
         }
     }
 
+    async getAlumnoByTurno(turno: string) {
+        try {
+            const alumno = await this.alumnoRepository.find({where: {
+                turno: turno
+            }})
+            if (alumno.length == 0) {
+                throw new HttpException('No se encontraron alumnos con ese turno', HttpStatus.NOT_FOUND)
+            }
+            return alumno
+        } catch (error) {
+            this.logger.error(`Error recuperando alumnos con turno ${turno} - ${error}`)
+            throw new HttpException('Error recuperando alumno', HttpStatus.INTERNAL_SERVER_ERROR)   
+        }
+    }
+
     async getAlumnosByGrado(grado: number, turno: string){
         try {
             const alumnos = await this.alumnoRepository.find({where: {
