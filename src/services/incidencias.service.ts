@@ -133,15 +133,20 @@ export class IncidenciasService {
             const incidencia = await this.incidenciasRepository.save(newIncidencia)
             if (incidencia) {
                 this.logger.log("Incidencia guardada")
-                const alumno = await this.alumnoRepository.find({where: {matricula: createIncidenciaDto.alumno_id.matricula}})
+                const matricula = createIncidenciaDto.alumno_id.matricula
+                const alumno = await this.alumnoRepository.findOne({where: {matricula}})
+                if (alumno == null) {
+                    this.logger.log("Alumno no encontrado, borrando incidencia")
+                    this.incidenciasRepository.delete(incidencia.id)
+                }
                 this.logger.log("Alumno encontrado")
-                this.logger.log(alumno[0].matricula)
+                this.logger.log(alumno.matricula)
                 if(createIncidenciaDto.tipo === 1) {
-                    return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias: alumno[0].incidencias + 1})
+                    return this.alumnoRepository.update({matricula: alumno.matricula}, {incidencias: alumno.incidencias + 1})
                 } else if (createIncidenciaDto.tipo === 2) {
-                    return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias_graves: alumno[0].incidencias_graves + 1})
+                    return this.alumnoRepository.update({matricula: alumno.matricula}, {incidencias_graves: alumno.incidencias_graves + 1})
                 } else if (createIncidenciaDto.tipo === 3) {
-                    return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias_muy_graves: alumno[0].incidencias_muy_graves + 1})
+                    return this.alumnoRepository.update({matricula: alumno.matricula}, {incidencias_muy_graves: alumno.incidencias_muy_graves + 1})
                 }
             }
         }
