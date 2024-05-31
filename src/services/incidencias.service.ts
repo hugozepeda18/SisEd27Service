@@ -128,6 +128,7 @@ export class IncidenciasService {
 
     async createIncidencia(createIncidenciaDto: CreateIncidenciaDto){
         try {
+            this.logger.log(createIncidenciaDto.alumno_id)
             const newIncidencia = this.incidenciasRepository.create(createIncidenciaDto)
             this.logger.log("Incidencia creada")
             const incidencia = await this.incidenciasRepository.save(newIncidencia)
