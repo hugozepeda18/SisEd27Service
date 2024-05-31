@@ -32,7 +32,7 @@ export class AlumnoController {
 
     @Get('turno')
     async getAlumnoByTurno(@Query() {turno}: QueryAlumnoTurnoDto) {
-        this.logger.log(`GET - Recuperando alumnos con turno ${turno}}`)
+        this.logger.log(`GET - Recuperando alumnos con turno ${turno}`)
         return await this.alumnoService.getAlumnoByTurno(turno)
     }
 
