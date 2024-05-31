@@ -134,6 +134,7 @@ export class IncidenciasService {
             if (incidencia) {
                 this.logger.log("Incidencia guardada")
                 const matricula = createIncidenciaDto.alumno_id.matricula
+                this.logger.log(matricula)
                 const alumno = await this.alumnoRepository.findOne({where: {matricula}})
                 if (alumno == null) {
                     this.logger.log("Alumno no encontrado, borrando incidencia")
