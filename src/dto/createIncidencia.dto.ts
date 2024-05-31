@@ -4,7 +4,7 @@ import { Alumno, Personal } from "src/typeorm";
 export class CreateIncidenciaDto {
 
     @IsNotEmpty()
-    alumno_id: Alumno;
+    alumno_id: any;
 
     @IsNotEmpty()
     fecha: Date;

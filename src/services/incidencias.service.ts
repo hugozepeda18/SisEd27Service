@@ -128,18 +128,17 @@ export class IncidenciasService {
 
     async createIncidencia(createIncidenciaDto: CreateIncidenciaDto){
         try {
-            this.logger.log(createIncidenciaDto.alumno_id)
+            const matricula = createIncidenciaDto.alumno_id
             const newIncidencia = this.incidenciasRepository.create(createIncidenciaDto)
             this.logger.log("Incidencia creada")
             const incidencia = await this.incidenciasRepository.save(newIncidencia)
             if (incidencia) {
                 this.logger.log("Incidencia guardada")
-                const matricula = createIncidenciaDto.alumno_id.matricula
-                this.logger.log(matricula)
                 const alumno = await this.alumnoRepository.findOne({where: {matricula}})
                 if (alumno == null) {
                     this.logger.log("Alumno no encontrado, borrando incidencia")
                     this.incidenciasRepository.delete(incidencia.id)
+                    return new HttpException('Alumno no encontrado', HttpStatus.NOT_FOUND)
                 }
                 this.logger.log("Alumno encontrado")
                 this.logger.log(alumno.matricula)
