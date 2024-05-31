@@ -18,66 +18,129 @@ export class IncidenciasService {
     ) {}
 
     async getIncidencias () {
-        return await this.incidenciasRepository.find()
+        try {
+            const incidencias = await this.incidenciasRepository.find()
+            if (incidencias.length == 0) {
+                throw new HttpException('No se encontraron incidencias', HttpStatus.NOT_FOUND)
+            }
+            return incidencias
+        } catch (error) {
+            this.logger.error(`Error recuperando incidencias`)
+            throw new HttpException('Error recuperando incidencias', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async getIncidencia (id: number) {
-        return await this.incidenciasRepository.findOne({
-            where: { id }, 
-            relations: {
-                alumno_id: true,
-                personal_id: true
-            },
-        })
+        try {
+            const incidencia = await this.incidenciasRepository.findOne({
+                where: {id},
+                relations: {
+                    alumno_id: true,
+                    personal_id: true
+                },
+            })
+            if (!incidencia) {
+                throw new HttpException('No se encontró incidencia con ese id', HttpStatus.NOT_FOUND)
+            }
+            return incidencia
+        } catch (error) {
+            this.logger.error(`Error recuperando incidencia con id ${id}`)
+            throw new HttpException('Error recuperando incidencia', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async getIncidenciasAlumno (matricula: number) {
-        const alumno = await this.alumnoRepository.findOne({where: {matricula}})
-        return await this.incidenciasRepository.find({
-            where: { alumno_id: alumno},
-            relations: {
-                alumno_id: true,
-                personal_id: true
-            },
-        })
+        try {
+            const alumno = await this.alumnoRepository.findOne({where: {matricula}})
+            const incidencias = await this.incidenciasRepository.find({
+                where: { alumno_id: alumno},
+                relations: {
+                    alumno_id: true,
+                    personal_id: true
+                },
+            })
+            return incidencias
+        }   catch (error) {
+            this.logger.error(`Error recuperando incidencias de alumno con matrícula ${matricula}`)
+            throw new HttpException('Error recuperando incidencias', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    async getAlumnoByTurno (turno: string) {
+        try {
+            const alumnos = await this.alumnoRepository.find({where: {turno}})
+            const incidencias = await this.incidenciasRepository.find({
+                where: { alumno_id: alumnos},
+                relations: {
+                    alumno_id: true,
+                    personal_id: true
+                },
+            })
+            if (incidencias.length == 0) {
+                throw new HttpException('No se encontraron incidencias', HttpStatus.NOT_FOUND)
+            }
+            return incidencias
+        } catch (error) {
+            this.logger.error(`Error recuperando incidencias de alumnos con turno ${turno}`)
+            throw new HttpException('Error recuperando incidencias', HttpStatus.INTERNAL_SERVER_ERROR)   
+        }
     }
 
     async getIncidenciasAlumnos (grado: number, turno: string) {
-        const alumnos = await this.alumnoRepository.find({where: {grado, turno}})
-        return await this.incidenciasRepository.find({
-            where: { alumno_id: alumnos},
-            relations: {
-                alumno_id: true,
-                personal_id: true
-            },
-        })
+        try {
+            const alumnos = await this.alumnoRepository.find({where: {grado, turno}})
+            const incidencias = await this.incidenciasRepository.find({
+                where: { alumno_id: alumnos},
+                relations: {
+                    alumno_id: true,
+                    personal_id: true
+                },
+            })
+            if (incidencias.length == 0) {
+                throw new HttpException('No se encontraron incidencias', HttpStatus.NOT_FOUND)
+            }
+            return incidencias
+        } catch (error) {
+            this.logger.error(`Error recuperando incidencias de alumnos con grado ${grado} y turno ${turno}`)
+            throw new HttpException('Error recuperando incidencias', HttpStatus.INTERNAL_SERVER_ERROR)   
+        }
     }
 
     async getIncidenciasAlumnosGrupo (grado: number, grupo: string, turno: string) {
-        const alumnos = await this.alumnoRepository.find({where: {grado, grupo, turno}})
-        return await this.incidenciasRepository.find({
-            where: { alumno_id: alumnos},
-            relations: {
-                alumno_id: true,
-                personal_id: true
-            },
-        })
+        try {
+            const alumnos = await this.alumnoRepository.find({where: {grado, grupo, turno}})
+            const incidencias = await this.incidenciasRepository.find({
+                where: { alumno_id: alumnos},
+                relations: {
+                    alumno_id: true,
+                    personal_id: true
+                },
+            })
+            if (incidencias.length == 0) {
+                throw new HttpException('No se encontraron incidencias', HttpStatus.NOT_FOUND)
+            }
+            return incidencias
+        } catch (error) {
+            this.logger.error(`Error recuperando incidencias de alumnos con grado ${grado}, grupo ${grupo} y turno ${turno}`)
+            throw new HttpException('Error recuperando incidencias', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     async createIncidencia(createIncidenciaDto: CreateIncidenciaDto){
-        
         try {
             const newIncidencia = this.incidenciasRepository.create(createIncidenciaDto)
-            this.logger.debug("Incidencia creada")
+            this.logger.log("Incidencia creada")
             const incidencia = await this.incidenciasRepository.save(newIncidencia)
             if (incidencia) {
-                const alumno = await this.alumnoRepository.findOne({where: {matricula: createIncidenciaDto.alumno_id.matricula}})
+                this.logger.log("Incidencia guardada")
+                const alumno = await this.alumnoRepository.find({where: {matricula: createIncidenciaDto.alumno_id.matricula}})
+                this.logger.log("Alumno encontrado: ", alumno[0])
                 if(createIncidenciaDto.tipo === 1) {
-                    return this.alumnoRepository.update({matricula: alumno.matricula}, {incidencias: alumno.incidencias + 1})
+                    return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias: alumno[0].incidencias + 1})
                 } else if (createIncidenciaDto.tipo === 2) {
-                    return this.alumnoRepository.update({matricula: alumno.matricula}, {incidencias_graves: alumno.incidencias_graves + 1})
+                    return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias_graves: alumno[0].incidencias_graves + 1})
                 } else if (createIncidenciaDto.tipo === 3) {
-                    return this.alumnoRepository.update({matricula: alumno.matricula}, {incidencias_muy_graves: alumno.incidencias_muy_graves + 1})
+                    return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias_muy_graves: alumno[0].incidencias_muy_graves + 1})
                 }
             }
         }
@@ -96,18 +159,19 @@ export class IncidenciasService {
                 personal_id: true
             }})
             const incidenciaBorrada = await this.incidenciasRepository.delete(id)
-            this.logger.debug("Incidencia borrada")
+            this.logger.log("Incidencia borrada")
             if (incidenciaBorrada) {
-                const alumno = await this.alumnoRepository.findOne({where: {matricula: incidencia.alumno_id.matricula}})
+                const alumno = await this.alumnoRepository.find({where: {matricula: incidencia.alumno_id.matricula}})
                 if(incidencia.tipo === 1) {
-                    return this.alumnoRepository.update({matricula: alumno.matricula}, {incidencias: alumno.incidencias - 1})
+                    return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias: alumno[0].incidencias - 1})
                 } else if (incidencia.tipo === 2) {
-                    return this.alumnoRepository.update({matricula: alumno.matricula}, {incidencias_graves: alumno.incidencias_graves - 1})
+                    return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias_graves: alumno[0].incidencias_graves - 1})
                 } else if (incidencia.tipo === 3) {
-                    return this.alumnoRepository.update({matricula: alumno.matricula}, {incidencias_muy_graves: alumno.incidencias_muy_graves - 1})
+                    return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias_muy_graves: alumno[0].incidencias_muy_graves - 1})
                 }
+            } else {
+                throw new HttpException('No se borró la incidencia', HttpStatus.CONFLICT)
             }
-            return 
         } 
         catch (error) {
             this.logger.error(`Incidencia no se pudo borrar con error ${error}`)

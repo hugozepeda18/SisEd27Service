@@ -30,8 +30,8 @@ import { AsistenciaModule } from './modules/asistencia.module';
     AlumnoModule,
     PersonalModule,
     IncidenciasModule,
-    UserModule,
-    AsistenciaModule,
+    UserModule, 
+    AsistenciaModule
   ],
   controllers: [AppController],
   providers: [AppService],

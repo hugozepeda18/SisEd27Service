@@ -14,40 +14,39 @@ export class PersonalController {
     
     @Get()
     async getPersonal() {
-        this.logger.debug('Recuperando todo el personal')
+        this.logger.log('GET - Recuperando todo el personal')
         return await this.personalService.getPersonal()
     }
 
-    @Get('/turno')
+    @Get('turno')
     async getPersonalTurno(@Query() {turno}: {turno: string}) {
-        this.logger.debug(`Recuperando el personal del turno ${turno}`)
+        this.logger.log(`GET - Recuperando el personal del turno ${turno}`)
         return await this.personalService.getPersonalTurno(turno)
     }
 
-    @Get('/id')
+    @Get('id')
     async getPersonalById(@Query() {id}: QueryPersonalIdDto) {
-        this.logger.log(`Recuperando personal con id ${id}`)
+        this.logger.log(`GET - Recuperando personal con id ${id}`)
         return await this.personalService.getPersonalById(id)
     }
 
-    @Get('/docentes')
+    @Get('docentes')
     async getDocentes(@Query() {funsion, turno}: QueryDocentesDto) {
-        this.logger.log(`Recuperando docentes con funsion ${funsion} y turno ${turno}`)
+        this.logger.log(`GET - Recuperando docentes con funsion ${funsion} y turno ${turno}`)
         return await this.personalService.getDocentes(funsion, turno)
     }
 
     @Post()
     @HttpCode(201)
     async createPersonal(@Body() createPersonalDto: CreatePersonalDto) {
-        this.logger.log(`Creando personal`)
+        this.logger.log(`POST - Creando personal`)
         return await this.personalService.createPersonal(createPersonalDto)
     }   
 
     @Delete()
     @HttpCode(204)
     async deletePersonal(@Query() {id}: DeletePersonalDto) {
-        this.logger.log(`Eliminando personal con id ${id}`)
+        this.logger.log(`DELETE - Eliminando personal con id ${id}`)
         return await this.personalService.deletePersonal(id)
     } 
-
 }
