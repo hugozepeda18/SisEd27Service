@@ -134,7 +134,8 @@ export class IncidenciasService {
             if (incidencia) {
                 this.logger.log("Incidencia guardada")
                 const alumno = await this.alumnoRepository.find({where: {matricula: createIncidenciaDto.alumno_id.matricula}})
-                this.logger.log("Alumno encontrado: ", alumno[0])
+                this.logger.log("Alumno encontrado")
+                this.logger.log(alumno[0].matricula)
                 if(createIncidenciaDto.tipo === 1) {
                     return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias: alumno[0].incidencias + 1})
                 } else if (createIncidenciaDto.tipo === 2) {
