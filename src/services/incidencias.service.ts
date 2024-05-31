@@ -168,13 +168,13 @@ export class IncidenciasService {
             const incidenciaBorrada = await this.incidenciasRepository.delete(id)
             this.logger.log("Incidencia borrada")
             if (incidenciaBorrada) {
-                const alumno = await this.alumnoRepository.find({where: {matricula: incidencia.alumno_id.matricula}})
+                const alumno = await this.alumnoRepository.findOne({where: {matricula: incidencia.alumno_id.matricula}})
                 if(incidencia.tipo === 1) {
-                    return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias: alumno[0].incidencias - 1})
+                    return this.alumnoRepository.update({matricula: alumno.matricula}, {incidencias: alumno.incidencias - 1})
                 } else if (incidencia.tipo === 2) {
-                    return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias_graves: alumno[0].incidencias_graves - 1})
+                    return this.alumnoRepository.update({matricula: alumno.matricula}, {incidencias_graves: alumno.incidencias_graves - 1})
                 } else if (incidencia.tipo === 3) {
-                    return this.alumnoRepository.update({matricula: alumno[0].matricula}, {incidencias_muy_graves: alumno[0].incidencias_muy_graves - 1})
+                    return this.alumnoRepository.update({matricula: alumno.matricula}, {incidencias_muy_graves: alumno.incidencias_muy_graves - 1})
                 }
             } else {
                 throw new HttpException('No se borró la incidencia', HttpStatus.CONFLICT)
