@@ -60,9 +60,14 @@ export class AlumnoService {
 
     async getAlumnoByTurno(turno: string) {
         try {
-            const alumno = await this.alumnoRepository.find({where: {
-                turno: turno
-            }})
+            const alumno = await this.alumnoRepository.find({
+                where: {
+                    turno: turno
+                },
+                order : {
+                    nombre: 'ASC'
+                }
+            })
             if (alumno.length == 0) {
                 throw new HttpException('No se encontraron alumnos con ese turno', HttpStatus.NOT_FOUND)
             }
